@@ -5,8 +5,8 @@ option go_package = "github.com/ilyatbn/keymv-proto/core/params";
 //Define response body
 message RequestParam {
   string param = 1;
-  string customValues = 2;
-  string authToken = 3;
+  string authToken = 2;
+  string customValues = 3;
 }
 
 message ResponseParam {
