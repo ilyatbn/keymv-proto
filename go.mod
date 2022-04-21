@@ -1,4 +1,4 @@
-module keymv.io/proto
+module github.com/ilyatbn/keymv-proto
 
 go 1.18
 
