@@ -1,6 +1,6 @@
 syntax = "proto3";
-package params;
-option go_package = "keymv.io/proto/params";
+package params_proto;
+option go_package = "keymv.io/proto/params_proto";
 
 //Define response body
 message RequestParam {
