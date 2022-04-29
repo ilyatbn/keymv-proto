@@ -2,16 +2,29 @@ syntax = "proto3";
 package auth;
 option go_package = "github.com/ilyatbn/keymv-proto/authengine/auth";
 
-//Define response body
-message Request {
-  string authToken = 1;
-  string requestId = 2;
+message Credentials{
+  string username = 1;
+  string password = 2;
+  string requestId =3;
 }
 
-message Response {
-  string orgid =1;  
+message ResponseToken {
+  string token =1;  
+}
+
+message validationDataReq {
+  string authUser = 1;
+  string authPass = 2;
+  string userinfo = 3;
+}
+
+message validationDataRes {
+  string valid = 1;
+  string orgId = 2;
+  string role = 3;
 }
 
 service AuthEngine {
-  rpc auth(Request) returns (Response) {}
+  rpc auth(Credentials) returns (ResponseToken) {}
+  rpc validate(validationDataReq) returns (validationDataRes) {}
 }

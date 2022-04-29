@@ -18,7 +18,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthEngineClient interface {
-	Auth(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
+	Auth(ctx context.Context, in *Credentials, opts ...grpc.CallOption) (*ResponseToken, error)
+	Validate(ctx context.Context, in *ValidationDataReq, opts ...grpc.CallOption) (*ValidationDataRes, error)
 }
 
 type authEngineClient struct {
@@ -29,9 +30,18 @@ func NewAuthEngineClient(cc grpc.ClientConnInterface) AuthEngineClient {
 	return &authEngineClient{cc}
 }
 
-func (c *authEngineClient) Auth(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error) {
-	out := new(Response)
+func (c *authEngineClient) Auth(ctx context.Context, in *Credentials, opts ...grpc.CallOption) (*ResponseToken, error) {
+	out := new(ResponseToken)
 	err := c.cc.Invoke(ctx, "/auth.AuthEngine/auth", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authEngineClient) Validate(ctx context.Context, in *ValidationDataReq, opts ...grpc.CallOption) (*ValidationDataRes, error) {
+	out := new(ValidationDataRes)
+	err := c.cc.Invoke(ctx, "/auth.AuthEngine/validate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +52,8 @@ func (c *authEngineClient) Auth(ctx context.Context, in *Request, opts ...grpc.C
 // All implementations must embed UnimplementedAuthEngineServer
 // for forward compatibility
 type AuthEngineServer interface {
-	Auth(context.Context, *Request) (*Response, error)
+	Auth(context.Context, *Credentials) (*ResponseToken, error)
+	Validate(context.Context, *ValidationDataReq) (*ValidationDataRes, error)
 	mustEmbedUnimplementedAuthEngineServer()
 }
 
@@ -50,8 +61,11 @@ type AuthEngineServer interface {
 type UnimplementedAuthEngineServer struct {
 }
 
-func (UnimplementedAuthEngineServer) Auth(context.Context, *Request) (*Response, error) {
+func (UnimplementedAuthEngineServer) Auth(context.Context, *Credentials) (*ResponseToken, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Auth not implemented")
+}
+func (UnimplementedAuthEngineServer) Validate(context.Context, *ValidationDataReq) (*ValidationDataRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Validate not implemented")
 }
 func (UnimplementedAuthEngineServer) mustEmbedUnimplementedAuthEngineServer() {}
 
@@ -67,7 +81,7 @@ func RegisterAuthEngineServer(s grpc.ServiceRegistrar, srv AuthEngineServer) {
 }
 
 func _AuthEngine_Auth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Request)
+	in := new(Credentials)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -79,7 +93,25 @@ func _AuthEngine_Auth_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: "/auth.AuthEngine/auth",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthEngineServer).Auth(ctx, req.(*Request))
+		return srv.(AuthEngineServer).Auth(ctx, req.(*Credentials))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthEngine_Validate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidationDataReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthEngineServer).Validate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.AuthEngine/validate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthEngineServer).Validate(ctx, req.(*ValidationDataReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -94,6 +126,10 @@ var AuthEngine_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "auth",
 			Handler:    _AuthEngine_Auth_Handler,
+		},
+		{
+			MethodName: "validate",
+			Handler:    _AuthEngine_Validate_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
