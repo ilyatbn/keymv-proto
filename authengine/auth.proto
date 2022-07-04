@@ -13,15 +13,15 @@ message ResponseToken {
 }
 
 message validationDataReq {
-  string authUser = 1;
-  string authPass = 2;
-  string userinfo = 3;
+  string RequestId = 1;
+  string Token = 2;
 }
 
 message validationDataRes {
   string valid = 1;
-  string orgId = 2;
+  int32 orgId = 2;
   string role = 3;
+  bool shouldRefresh = 4;
 }
 
 service AuthEngine {
