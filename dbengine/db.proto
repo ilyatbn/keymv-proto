@@ -1,0 +1,16 @@
+syntax = "proto3";
+package db;
+option go_package = "github.com/ilyatbn/keymv-proto/dbengine/db";
+
+//Define response body
+message CustomCommandReq {
+  string command = 1;
+}
+
+message CustomCommandRes {
+  string data = 1;  
+}
+
+service DBEngine {
+  rpc CustomQuery(CustomCommandReq) returns (CustomCommandRes) {}
+}
