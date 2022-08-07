@@ -18,7 +18,11 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DBEngineClient interface {
-	CustomQuery(ctx context.Context, in *CustomCommandReq, opts ...grpc.CallOption) (*CustomCommandRes, error)
+	GetUserLogonData(ctx context.Context, in *EmailReq, opts ...grpc.CallOption) (*UserLogonData, error)
+	GetUserRole(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*UserRole, error)
+	GetUserGroups(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*UserGroups, error)
+	GetUserSettings(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*UserSettings, error)
+	GetOraganizationInfo(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*OrganizationData, error)
 }
 
 type dBEngineClient struct {
@@ -29,9 +33,45 @@ func NewDBEngineClient(cc grpc.ClientConnInterface) DBEngineClient {
 	return &dBEngineClient{cc}
 }
 
-func (c *dBEngineClient) CustomQuery(ctx context.Context, in *CustomCommandReq, opts ...grpc.CallOption) (*CustomCommandRes, error) {
-	out := new(CustomCommandRes)
-	err := c.cc.Invoke(ctx, "/db.DBEngine/CustomQuery", in, out, opts...)
+func (c *dBEngineClient) GetUserLogonData(ctx context.Context, in *EmailReq, opts ...grpc.CallOption) (*UserLogonData, error) {
+	out := new(UserLogonData)
+	err := c.cc.Invoke(ctx, "/db.DBEngine/GetUserLogonData", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dBEngineClient) GetUserRole(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*UserRole, error) {
+	out := new(UserRole)
+	err := c.cc.Invoke(ctx, "/db.DBEngine/GetUserRole", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dBEngineClient) GetUserGroups(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*UserGroups, error) {
+	out := new(UserGroups)
+	err := c.cc.Invoke(ctx, "/db.DBEngine/GetUserGroups", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dBEngineClient) GetUserSettings(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*UserSettings, error) {
+	out := new(UserSettings)
+	err := c.cc.Invoke(ctx, "/db.DBEngine/GetUserSettings", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dBEngineClient) GetOraganizationInfo(ctx context.Context, in *IdReq, opts ...grpc.CallOption) (*OrganizationData, error) {
+	out := new(OrganizationData)
+	err := c.cc.Invoke(ctx, "/db.DBEngine/GetOraganizationInfo", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +82,11 @@ func (c *dBEngineClient) CustomQuery(ctx context.Context, in *CustomCommandReq, 
 // All implementations must embed UnimplementedDBEngineServer
 // for forward compatibility
 type DBEngineServer interface {
-	CustomQuery(context.Context, *CustomCommandReq) (*CustomCommandRes, error)
+	GetUserLogonData(context.Context, *EmailReq) (*UserLogonData, error)
+	GetUserRole(context.Context, *IdReq) (*UserRole, error)
+	GetUserGroups(context.Context, *IdReq) (*UserGroups, error)
+	GetUserSettings(context.Context, *IdReq) (*UserSettings, error)
+	GetOraganizationInfo(context.Context, *IdReq) (*OrganizationData, error)
 	mustEmbedUnimplementedDBEngineServer()
 }
 
@@ -50,8 +94,20 @@ type DBEngineServer interface {
 type UnimplementedDBEngineServer struct {
 }
 
-func (UnimplementedDBEngineServer) CustomQuery(context.Context, *CustomCommandReq) (*CustomCommandRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CustomQuery not implemented")
+func (UnimplementedDBEngineServer) GetUserLogonData(context.Context, *EmailReq) (*UserLogonData, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserLogonData not implemented")
+}
+func (UnimplementedDBEngineServer) GetUserRole(context.Context, *IdReq) (*UserRole, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserRole not implemented")
+}
+func (UnimplementedDBEngineServer) GetUserGroups(context.Context, *IdReq) (*UserGroups, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserGroups not implemented")
+}
+func (UnimplementedDBEngineServer) GetUserSettings(context.Context, *IdReq) (*UserSettings, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserSettings not implemented")
+}
+func (UnimplementedDBEngineServer) GetOraganizationInfo(context.Context, *IdReq) (*OrganizationData, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOraganizationInfo not implemented")
 }
 func (UnimplementedDBEngineServer) mustEmbedUnimplementedDBEngineServer() {}
 
@@ -66,20 +122,92 @@ func RegisterDBEngineServer(s grpc.ServiceRegistrar, srv DBEngineServer) {
 	s.RegisterService(&DBEngine_ServiceDesc, srv)
 }
 
-func _DBEngine_CustomQuery_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CustomCommandReq)
+func _DBEngine_GetUserLogonData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EmailReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DBEngineServer).CustomQuery(ctx, in)
+		return srv.(DBEngineServer).GetUserLogonData(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/db.DBEngine/CustomQuery",
+		FullMethod: "/db.DBEngine/GetUserLogonData",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DBEngineServer).CustomQuery(ctx, req.(*CustomCommandReq))
+		return srv.(DBEngineServer).GetUserLogonData(ctx, req.(*EmailReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DBEngine_GetUserRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DBEngineServer).GetUserRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/db.DBEngine/GetUserRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DBEngineServer).GetUserRole(ctx, req.(*IdReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DBEngine_GetUserGroups_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DBEngineServer).GetUserGroups(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/db.DBEngine/GetUserGroups",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DBEngineServer).GetUserGroups(ctx, req.(*IdReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DBEngine_GetUserSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DBEngineServer).GetUserSettings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/db.DBEngine/GetUserSettings",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DBEngineServer).GetUserSettings(ctx, req.(*IdReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DBEngine_GetOraganizationInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DBEngineServer).GetOraganizationInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/db.DBEngine/GetOraganizationInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DBEngineServer).GetOraganizationInfo(ctx, req.(*IdReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -92,8 +220,24 @@ var DBEngine_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*DBEngineServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CustomQuery",
-			Handler:    _DBEngine_CustomQuery_Handler,
+			MethodName: "GetUserLogonData",
+			Handler:    _DBEngine_GetUserLogonData_Handler,
+		},
+		{
+			MethodName: "GetUserRole",
+			Handler:    _DBEngine_GetUserRole_Handler,
+		},
+		{
+			MethodName: "GetUserGroups",
+			Handler:    _DBEngine_GetUserGroups_Handler,
+		},
+		{
+			MethodName: "GetUserSettings",
+			Handler:    _DBEngine_GetUserSettings_Handler,
+		},
+		{
+			MethodName: "GetOraganizationInfo",
+			Handler:    _DBEngine_GetOraganizationInfo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

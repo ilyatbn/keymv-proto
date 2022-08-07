@@ -2,15 +2,49 @@ syntax = "proto3";
 package db;
 option go_package = "github.com/ilyatbn/keymv-proto/dbengine/db";
 
+import "google/protobuf/timestamp.proto";
+
 //Define response body
-message CustomCommandReq {
-  string command = 1;
+message EmailReq {
+  string Email = 1;
 }
 
-message CustomCommandRes {
-  string data = 1;  
+message IdReq {
+  string id = 1;
 }
 
+message UserLogonData {
+  string Id       = 1;
+	string Org      = 2; 
+	string Role     = 3;
+	string Password = 4;
+}
+
+message UserRole {
+  string RoleName = 1;
+  string RoleType = 2;
+}
+
+
+message UserGroups {
+  repeated string Groups = 1;
+}
+
+message UserSettings {
+  bool Enabled                                = 1;
+  string FirstName                            = 2;
+  string LastName                             = 3;
+  google.protobuf.Timestamp LastLogin         = 4;
+  google.protobuf.Timestamp RegistrationDate  = 5;
+}
+
+message OrganizationData {
+  string OrganizationName = 1;
+}
 service DBEngine {
-  rpc CustomQuery(CustomCommandReq) returns (CustomCommandRes) {}
+  rpc GetUserLogonData(EmailReq) returns (UserLogonData) {}
+  rpc GetUserRole(IdReq) returns (UserRole) {}
+  rpc GetUserGroups(IdReq) returns (UserGroups) {}
+  rpc GetUserSettings(IdReq) returns (UserSettings) {}
+  rpc GetOraganizationInfo(IdReq) returns (OrganizationData) {}
 }
