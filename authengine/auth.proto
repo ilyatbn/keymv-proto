@@ -19,7 +19,7 @@ message validationDataReq {
 
 message validationDataRes {
   string valid = 1;
-  int32 orgId = 2;
+  string orgId = 2;
   string role = 3;
   bool shouldRefresh = 4;
 }

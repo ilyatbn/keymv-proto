@@ -7,6 +7,7 @@ import "google/protobuf/timestamp.proto";
 //Define response body
 message EmailReq {
   string Email = 1;
+  string RequestId = 2;
 }
 
 message IdReq {
@@ -41,6 +42,7 @@ message UserSettings {
 message OrganizationData {
   string OrganizationName = 1;
 }
+
 service DBEngine {
   rpc GetUserLogonData(EmailReq) returns (UserLogonData) {}
   rpc GetUserRole(IdReq) returns (UserRole) {}
